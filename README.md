@@ -21,8 +21,8 @@ To propose content:
 1. Sign-in into GitHub
 2. Open an issue on this repository using: [New Content](https://github.com/flatcar/socials/issues/new/choose) issue type
 3. Add a title to this issue (this is just for referencing purpose, this will not be in the final content)
-(4. Optional: Set label to target a specific social network, no label means 'all')
-4. Submit the issue with the "Create" button
+4. Optional: Set label to target a specific social network, no label means 'all'
+5. Submit the issue with the "Create" button
 
 Then what? An automatic workflow will create a [pull request)](https://github.com/flatcar/socials/pulls) and the Flatcar maintainers team will review this content. If the content is approved, it will be published.
 
