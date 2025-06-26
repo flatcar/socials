@@ -1,0 +1,17 @@
+---
+name: New Content
+description: Submit content to be reviewed and published
+title: "Content's title"
+labels:
+  - content
+  - mastodon
+  - bluesky
+  - X
+body:
+  - type: textarea
+    id: body
+    attributes:
+      label: Content
+      placeholder: Here's the content of the post.
+    validations:
+      required: true
