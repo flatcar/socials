@@ -1,0 +1,50 @@
+---
+name: Handle New Content
+on:
+  issues:
+    types:
+      - opened
+      - edited
+      - labeled
+      - unlabeled
+
+jobs:
+  content:
+    # assert we only parse new content issues
+    if: contains(github.event.issue.labels.*.name, 'content')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: issue-event
+        run: |
+          # Extract the issue author and the number of the issue
+          user=$(jq -r '.issue.user.login' ${GITHUB_EVENT_PATH})
+          number=$(jq -r '.issue.number' ${GITHUB_EVENT_PATH})
+
+          # Inject the issue author and the number of the issue into the GITHUB_OUTPUT
+          # to be later reused.
+          echo "user=${user}" >> "${GITHUB_OUTPUT}"
+          echo "number=${number}" >> "${GITHUB_OUTPUT}"
+
+          # Prepare the content of the PR:
+          # The title, the content and the label of the issue will be archived in the 'published' folder
+          jq -r '.issue.title' "${GITHUB_EVENT_PATH}" > ./published/"${number}-${user}.md"
+          echo >> ./published/"${number}-${user}.md"
+          jq -r '.issue.body' "${GITHUB_EVENT_PATH}" >> ./published/"${number}-${user}.md"
+          echo >> ./published/"${number}-${user}.md"
+          jq -r '[ .issue.labels[] | select(.name != "content") | .name ] | join(", ")' "${GITHUB_EVENT_PATH}" >> ./published/"${number}-${user}.md"
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: "${{ steps.issue-event.outputs.user }}/content-${{ steps.issue-event.outputs.number }}"
+          path: .
+          title: "new content from: ${{ steps.issue-event.outputs.user }}"
+          body: |
+            Hi folks, I would like to propose the following content to share on Flatcar social networks.
+
+            Closes: #${{ steps.issue-event.outputs.number }}
+          commit-message: "new content: #${{ steps.issue-event.outputs.number }}"
+          committer: "Flatcar Buildbot <buildbot@flatcar-linux.org>"
+          author: "Flatcar Buildbot <buildbot@flatcar-linux.org>"
