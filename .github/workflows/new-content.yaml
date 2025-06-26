@@ -10,7 +10,7 @@ jobs:
   content:
     # assert we only parse new content issues
     if: contains(github.event.issue.labels.*.name, 'content')
-    runs: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
