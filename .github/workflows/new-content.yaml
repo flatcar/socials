@@ -9,10 +9,38 @@ on:
       - unlabeled
 
 jobs:
+  validate:
+    # assert we only parse new content issues
+    if: github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'edited') && contains(github.event.issue.labels.*.name, 'content')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Check for content length
+        run: |
+          above_limit=$(jq -r '.issue.body | length > 280' "${GITHUB_EVENT_PATH}")
+
+          if [ "$above_limit" = true ]; then
+            # comment on the issue that we are above the limit.
+            gh issue comment "$NUMBER" --body "$BODY"
+
+            # exit with an exitcode different from 0 to make the dependency fail.
+            exit 1
+          fi
+
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          BODY: >
+            The length of this content is above the X limit (280 characters).
+
   content:
     # assert we only parse new content issues
     if: contains(github.event.issue.labels.*.name, 'content')
     runs-on: ubuntu-latest
+    needs:
+      - validate
     steps:
       - uses: actions/checkout@v4
 
