@@ -18,7 +18,11 @@ jobs:
     steps:
       - name: Check for content length
         run: |
-          above_limit=$(jq -r '.issue.body | length > 280' "${GITHUB_EVENT_PATH}")
+          # the limit is 293:
+          #   280 characters for the X limit
+          # + 13 characters offset for the "### Content\n\n" string added by the GitHub form
+          # = 293 for the limit
+          above_limit=$(jq -r '.issue.body | length > 293' "${GITHUB_EVENT_PATH}")
 
           if [ "$above_limit" = true ]; then
             # comment on the issue that we are above the limit.
