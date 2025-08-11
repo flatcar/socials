@@ -80,3 +80,4 @@ jobs:
           commit-message: "new content: #${{ steps.issue-event.outputs.number }}"
           committer: "Flatcar Buildbot <buildbot@flatcar-linux.org>"
           author: "Flatcar Buildbot <buildbot@flatcar-linux.org>"
+          signoff: true
