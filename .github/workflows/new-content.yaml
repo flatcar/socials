@@ -65,6 +65,8 @@ jobs:
           echo >> ./published/"${number}-${user}.md"
           jq -r '.issue.body' "${GITHUB_EVENT_PATH}" >> ./published/"${number}-${user}.md"
           echo >> ./published/"${number}-${user}.md"
+          jq -r '.issue.link' "${GITHUB_EVENT_PATH}" >> ./published/"${number}-${user}.md"
+          echo >> ./published/"${number}-${user}.md"
           jq -r '[ .issue.labels[] | select(.name != "content") | .name ] | join(", ")' "${GITHUB_EVENT_PATH}" >> ./published/"${number}-${user}.md"
 
       - uses: peter-evans/create-pull-request@v7
